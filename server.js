@@ -12,9 +12,16 @@ app.use(cors());
 app.use(express.json());
 
 // Database Connection
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('MongoDB Connected'))
-    .catch(err => console.log('MongoDB Connection Error:', err));
+const connectDB = async () => {
+    try {
+        if (mongoose.connection.readyState >= 1) return;
+        await mongoose.connect(process.env.MONGODB_URI);
+        console.log('MongoDB Connected');
+    } catch (err) {
+        console.log('MongoDB Connection Error:', err);
+    }
+};
+connectDB();
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -27,4 +34,8 @@ app.get('/', (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+if (process.env.NODE_ENV !== 'production' && process.env.VERCEL !== '1') {
+    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
+
+module.exports = app;

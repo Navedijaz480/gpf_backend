@@ -4,6 +4,7 @@ const salesController = require('../controllers/salesController');
 const auth = require('../middleware/auth');
 
 router.post('/', auth, salesController.createSale);
+router.put('/:id', auth, salesController.updateSale);
 router.get('/', auth, salesController.getSales);
 router.get('/summary', auth, salesController.getSummary);
 router.get('/today', auth, salesController.getTodaySales);

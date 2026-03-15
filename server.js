@@ -20,6 +20,8 @@ mongoose.connect(process.env.MONGODB_URI)
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/sales', require('./routes/sales'));
 app.use('/api/meta', require('./routes/meta'));
+app.use('/api/settings', require('./routes/settings'));
+app.use('/api/vehicles', require('./routes/vehicles'));
 
 // Root endpoint
 app.get('/', (req, res) => {

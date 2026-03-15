@@ -1,17 +1,121 @@
 const mongoose = require('mongoose');
 const Sale = require('../models/Sale');
+const Vehicle = require('../models/Vehicle');
 
 exports.createSale = async (req, res) => {
     try {
+        const { 
+            vehicleNumber, vehicleNo, 
+            brokerName, 
+            houseNo, 
+            flockNo, 
+            advanceAmount, advance,
+            weight1, 
+            price, rate,
+            weight2,
+            netWeight,
+            status
+        } = req.body;
+
+        const effectiveVehicleNo = vehicleNumber || vehicleNo;
+        const effectiveAdvance = advanceAmount || advance || 0;
+        const effectiveRate = price || rate || 0;
+
+        // First, create or update the vehicle
+        let vehicle = await Vehicle.findOne({ vehicleNumber: effectiveVehicleNo });
+        if (vehicle) {
+            // Update broker name if different
+            if (brokerName && vehicle.brokerName !== brokerName) {
+                vehicle.brokerName = brokerName;
+                await vehicle.save();
+            }
+        } else {
+            // Create new vehicle
+            vehicle = new Vehicle({
+                vehicleNumber: effectiveVehicleNo,
+                brokerName,
+                houseNo,
+                flockNo,
+                createdBy: req.user.id
+            });
+            await vehicle.save();
+        }
+
+        // Create sale with vehicle reference
         const newSale = new Sale({
-            ...req.body,
+            vehicleId: vehicle._id,
+            vehicleNo: effectiveVehicleNo,
+            houseNo,
+            flockNo,
+            weight1,
+            weight2: weight2 || 0,
+            netWeight: netWeight || weight1,
+            rate: effectiveRate,
+            totalAmount: (netWeight || weight1) * effectiveRate,
+            brokerName,
+            advance: effectiveAdvance,
+            due: ((netWeight || weight1) * effectiveRate) - effectiveAdvance,
+            status: status || 'pending',
             userId: req.user.id
         });
+
         const sale = await newSale.save();
-        res.json(sale);
+        res.json({
+            success: true,
+            data: sale
+        });
     } catch (err) {
         console.error(err);
-        res.status(500).send('Server Error');
+        res.status(500).json({
+            success: false,
+            message: 'Server Error'
+        });
+    }
+};
+
+exports.updateSale = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updateData = req.body;
+
+        // Calculate net weight and total amount if relevant fields are present
+        if (updateData.weight1 !== undefined && updateData.weight2 !== undefined) {
+             // If weight2 - weight1 is requested by user, we use that
+             updateData.netWeight = updateData.weight2 - updateData.weight1;
+        }
+
+        if (updateData.netWeight !== undefined && updateData.rate !== undefined) {
+            updateData.totalAmount = updateData.netWeight * updateData.rate;
+        }
+
+        // Calculate due if needed
+        if (updateData.totalAmount !== undefined) {
+            const advance = updateData.advance || 0;
+            const cash = updateData.cashAmount || 0;
+            const bank = (updateData.bankPayments || []).reduce((sum, p) => sum + (p.amount || 0), 0);
+            updateData.due = updateData.totalAmount - (advance + cash + bank);
+        }
+
+        const sale = await Sale.findOneAndUpdate(
+            { _id: id, userId: req.user.id },
+            { $set: updateData },
+            { new: true }
+        );
+
+        if (!sale) {
+            return res.status(404).json({ success: false, message: 'Sale not found' });
+        }
+
+        res.json({
+            success: true,
+            data: sale
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: 'Server Error'
+        });
     }
 };
 

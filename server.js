@@ -29,6 +29,7 @@ app.use('/api/sales', require('./routes/sales'));
 app.use('/api/meta', require('./routes/meta'));
 app.use('/api/settings', require('./routes/settings'));
 app.use('/api/vehicles', require('./routes/vehicles'));
+app.use('/api/admin', require('./routes/admin'));
 
 // Root endpoint
 app.get('/', (req, res) => {

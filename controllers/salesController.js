@@ -121,9 +121,32 @@ exports.updateSale = async (req, res) => {
 
 exports.getSales = async (req, res) => {
     try {
-        const sales = await Sale.find({ userId: req.user.id }).sort({ date: -1 });
+        const { date, houseNo, flockNo } = req.query;
+        let query = { userId: req.user.id };
+
+        if (houseNo) {
+            query.houseNo = houseNo;
+        }
+
+        if (flockNo) {
+            query.flockNo = flockNo;
+        }
+
+        if (date) {
+            // Filter entirely by the specified date string (assuming format 'YYYY-MM-DD')
+            const startDate = new Date(date);
+            startDate.setHours(0, 0, 0, 0);
+            
+            const endDate = new Date(date);
+            endDate.setHours(23, 59, 59, 999);
+            
+            query.date = { $gte: startDate, $lte: endDate };
+        }
+
+        const sales = await Sale.find(query).sort({ date: -1 });
         res.json(sales);
     } catch (err) {
+        console.error(err);
         res.status(500).send('Server Error');
     }
 };

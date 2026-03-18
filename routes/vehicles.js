@@ -15,4 +15,7 @@ router.post('/', vehicleController.createOrUpdateVehicle);
 // GET /api/vehicles/:vehicleNumber - Get vehicle by number
 router.get('/:vehicleNumber', vehicleController.getVehicleByNumber);
 
+// GET /api/vehicles/broker/:brokerName - Get vehicles by broker name
+router.get('/broker/:brokerName', vehicleController.getVehiclesByBroker);
+
 module.exports = router;

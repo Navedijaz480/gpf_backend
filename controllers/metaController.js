@@ -25,7 +25,7 @@ exports.getCurrentMeta = async (req, res) => {
 // Get list of unique vehicle numbers
 exports.getVehicles = async (req, res) => {
     try {
-        const vehicles = await Sale.distinct('vehicleNo', { userId: req.user.id });
+        const vehicles = await Sale.distinct('vehicleNo');
         res.json(vehicles);
     } catch (err) {
         res.status(500).send('Server Error');
@@ -35,7 +35,7 @@ exports.getVehicles = async (req, res) => {
 // Get list of unique brokers
 exports.getBrokers = async (req, res) => {
     try {
-        const brokers = await Sale.distinct('brokerName', { userId: req.user.id });
+        const brokers = await Sale.distinct('brokerName');
         res.json(brokers.filter(b => b)); // Filter out null/empty
     } catch (err) {
         res.status(500).send('Server Error');
@@ -47,7 +47,6 @@ exports.getVehicleWeightHistory = async (req, res) => {
     try {
         const { vehicleNo } = req.params;
         const history = await Sale.find({ 
-            userId: req.user.id, 
             vehicleNo: vehicleNo 
         })
         .sort({ date: -1 })
@@ -63,7 +62,7 @@ exports.getVehicleWeightHistory = async (req, res) => {
 // Get unique house numbers
 exports.getHouses = async (req, res) => {
     try {
-        const houses = await Sale.distinct('houseNo', { userId: req.user.id });
+        const houses = await Sale.distinct('houseNo');
         res.json(houses);
     } catch (err) {
         res.status(500).send('Server Error');
@@ -73,7 +72,7 @@ exports.getHouses = async (req, res) => {
 // Get unique flock numbers
 exports.getFlocks = async (req, res) => {
     try {
-        const flocks = await Sale.distinct('flockNo', { userId: req.user.id });
+        const flocks = await Sale.distinct('flockNo');
         res.json(flocks);
     } catch (err) {
         res.status(500).send('Server Error');

@@ -94,3 +94,24 @@ exports.getVehicleByNumber = async (req, res) => {
         });
     }
 };
+
+// Get vehicles by broker name
+exports.getVehiclesByBroker = async (req, res) => {
+    try {
+        const { brokerName } = req.params;
+        const vehicles = await Vehicle.find({ 
+            brokerName: { $regex: `^${brokerName}`, $options: 'i' } 
+        }).populate('createdBy', 'username email');
+        
+        res.json({
+            success: true,
+            data: vehicles
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({
+            success: false,
+            message: 'Server Error'
+        });
+    }
+};

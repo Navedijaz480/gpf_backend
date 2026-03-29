@@ -10,7 +10,7 @@ exports.register = async (req, res) => {
         user = new User({ username, email, password });
         await user.save();
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'your_super_secret_jwt_key_here', { expiresIn: '7d' });
         res.json({ token, user: { id: user._id, username, email, role: user.role } });
     } catch (err) {
         console.error('Registration Error:', err);
@@ -27,7 +27,7 @@ exports.login = async (req, res) => {
         const isMatch = await user.comparePassword(password);
         if (!isMatch) return res.status(400).json({ msg: 'Invalid Credentials' });
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET || 'your_super_secret_jwt_key_here', { expiresIn: '7d' });
         res.json({ token, user: { id: user._id, username: user.username, email: user.email, role: user.role } });
     } catch (err) {
         console.error('Login Error:', err);

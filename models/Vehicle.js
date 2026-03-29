@@ -9,7 +9,6 @@ const VehicleSchema = new mongoose.Schema({
     },
     brokerName: {
         type: String,
-        required: true,
         trim: true
     },
     houseNo: {

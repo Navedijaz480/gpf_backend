@@ -1,0 +1,50 @@
+{
+  "specificMatch": [
+    {
+      "_id": "69c81a08af85e404b3bac64b",
+      "houseNo": "9",
+      "flockNo": "2322",
+      "rate": 450,
+      "status": "completed"
+    },
+    {
+      "_id": "69c81876af85e404b3bac5bb",
+      "houseNo": "9",
+      "flockNo": "2322",
+      "rate": 450,
+      "status": "completed"
+    }
+  ],
+  "generalMatches": [
+    {
+      "_id": "69b6e6e4ec4f444e036eb55a",
+      "houseNo": "11",
+      "flockNo": "14",
+      "rate": 450
+    },
+    {
+      "_id": "69b6e712ec4f444e036eb564",
+      "houseNo": "11",
+      "flockNo": "14",
+      "rate": 450
+    },
+    {
+      "_id": "69b6eb2eec4f444e036eb591",
+      "houseNo": "11",
+      "flockNo": "14",
+      "rate": 450
+    },
+    {
+      "_id": "69b6eb57ec4f444e036eb59f",
+      "houseNo": "11",
+      "flockNo": "14",
+      "rate": 450
+    },
+    {
+      "_id": "69b7b669a7b37b09780f6f11",
+      "houseNo": "11",
+      "flockNo": "14",
+      "rate": 310
+    }
+  ]
+}

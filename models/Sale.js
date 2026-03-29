@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 
 const SaleSchema = new mongoose.Schema({
-    vehicleId: { 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Vehicle', 
-        required: true 
+    vehicleId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Vehicle',
+        required: true
     },
     vehicleNo: { type: String, required: true },
     houseNo: { type: String, required: true },
@@ -28,10 +28,10 @@ const SaleSchema = new mongoose.Schema({
     advance: { type: Number, default: 0 },
     paymentMethod: { type: String, enum: ['Cash', 'Bank', 'Mixed'], default: 'Cash' },
     date: { type: Date, default: Date.now },
-    status: { 
-        type: String, 
-        enum: ['pending', 'completed', 'cancelled'], 
-        default: 'pending' 
+    status: {
+        type: String,
+        enum: ['pending', 'completed', 'cancelled'],
+        default: 'pending'
     },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
 });

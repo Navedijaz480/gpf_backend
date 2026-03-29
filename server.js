@@ -14,6 +14,7 @@ app.use(express.json());
 // Database Connection
 const connectDB = async () => {
     try {
+        console.log("Loading...")
         if (mongoose.connection.readyState >= 1) return;
         if (!process.env.MONGODB_URI) {
             throw new Error('MONGODB_URI is not defined in environment variables');
@@ -27,6 +28,7 @@ const connectDB = async () => {
 
 // Database connection middleware for serverless
 app.use(async (req, res, next) => {
+    console.log("Loading...")
     await connectDB();
     next();
 });

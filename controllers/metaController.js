@@ -32,12 +32,69 @@ exports.getVehicles = async (req, res) => {
     }
 };
 
+const Broker = require('../models/Broker');
+
 // Get list of unique brokers
 exports.getBrokers = async (req, res) => {
     try {
-        const brokers = await Sale.distinct('brokerName');
-        res.json(brokers.filter(b => b)); // Filter out null/empty
+        const saleBrokers = await Sale.distinct('brokerName');
+        const dbBrokers = await Broker.find({ userId: req.user.id }).distinct('name');
+        
+        // Merge and remove duplicates
+        const allBrokers = [...new Set([...saleBrokers, ...dbBrokers])];
+        res.json(allBrokers.filter(b => b)); // Filter out null/empty
     } catch (err) {
+        res.status(500).send('Server Error');
+    }
+};
+
+// Add a new explicit broker
+exports.addBroker = async (req, res) => {
+    try {
+        const { name } = req.body;
+        if (!name) return res.status(400).json({ msg: 'Broker name is required' });
+
+        // Check if it already exists
+        const existingBroker = await Broker.findOne({ name: name.trim(), userId: req.user.id });
+        if (existingBroker) {
+            return res.json({ msg: 'Broker already exists', data: existingBroker });
+        }
+
+        const newBroker = new Broker({
+            name: name.trim(),
+            userId: req.user.id
+        });
+
+        await newBroker.save();
+        res.status(201).json({ msg: 'Broker added successfully', data: newBroker });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+};
+
+// Get the last rate for a specific house and flock
+exports.getLastRate = async (req, res) => {
+    try {
+        const { houseNo, flockNo } = req.query;
+        if (!houseNo || !flockNo) {
+            return res.status(400).json({ msg: 'houseNo and flockNo are required' });
+        }
+        
+        const latestSale = await Sale.findOne({
+            userId: req.user.id,
+            houseNo: houseNo,
+            flockNo: flockNo,
+            status: 'completed',
+            rate: { $gt: 0 }
+        }).sort({ date: -1 });
+
+        if (!latestSale) {
+            return res.json({ rate: 0 });
+        }
+        res.json({ rate: latestSale.rate });
+    } catch (err) {
+        console.error(err);
         res.status(500).send('Server Error');
     }
 };

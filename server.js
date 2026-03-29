@@ -16,10 +16,13 @@ const connectDB = async () => {
     try {
         console.log("Loading...")
         if (mongoose.connection.readyState >= 1) return;
-        if (!process.env.MONGODB_URI) {
-            throw new Error('MONGODB_URI is not defined in environment variables');
+        
+        const uri = process.env.MONGODB_URI || "mongodb://kgctestnet:kgc5588@ac-ypt2sui-shard-00-00.u28ckyu.mongodb.net:27017,ac-ypt2sui-shard-00-01.u28ckyu.mongodb.net:27017,ac-ypt2sui-shard-00-02.u28ckyu.mongodb.net:27017/?replicaSet=atlas-t7oh88-shard-0&ssl=true&authSource=admin";
+        
+        if (!uri) {
+            throw new Error('MONGODB_URI is not defined');
         }
-        await mongoose.connect(process.env.MONGODB_URI);
+        await mongoose.connect(uri);
         console.log('MongoDB Connected');
     } catch (err) {
         console.error('MongoDB Connection Error:', err.message);
